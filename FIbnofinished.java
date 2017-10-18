@@ -1,5 +1,5 @@
 
-public class FIb {
+public class FIbnofinished {
 	/*
 	 * FIB()µÄµÝ¹éÊµÏÖ
 	 * 
@@ -8,6 +8,9 @@ public class FIb {
 		System.out.println(fib2(20));
 		System.out.println(fib2(43));
 		System.out.println(fib2(50));
+		System.out.println(fib3(20));
+		System.out.println(fib3(43));
+		System.out.println(fib3(50));
 		System.out.println(fib1(20));
 		System.out.println(fib1(43));
 		System.out.println(fib1(50));
@@ -33,10 +36,26 @@ public class FIb {
 		while(0<n--) {
 			g = g+f;
 			f = g-f;
-			
+			  
 		}
 		
 		return g;
+	}
+	/*
+	 * 3:linear-recursion
+	 * through inclusion,we found that we needn't 
+	 * to compute twp recursion fib(n-1) and fib(n-2)
+	 * 
+	 *  we just copute fib(n-1)and fib(n) is ok
+	 */
+	
+	public static int fib3(int n) {
+		if(n==0) {
+			return 0;
+		}
+		else {
+			return fib3(n-1) + fib3(n);
+		}
 	}
 	
 	
