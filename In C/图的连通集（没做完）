@@ -1,0 +1,263 @@
+//正确答案
+#include<stdio.h>
+#include<stdlib.h>
+#define MaxVertexNum 10
+#define true 1
+#define false 0
+typedef int Bool;
+typedef int Vertex;
+typedef struct GNode *PtrToGNode;
+struct GNode{
+    int Nv;
+    int Ne;
+    int G[MaxVertexNum][MaxVertexNum];
+};
+typedef PtrToGNode MGraph;
+typedef struct QNode{
+    Vertex *Data;
+    int front;
+    int rear;
+}Queue;
+Queue *CreateQueue(int);
+void Enqueue(Queue *,Vertex);
+int Dequeue(Queue *);
+Bool TAG=false;
+Bool Visited[MaxVertexNum];
+MGraph CreateGraph(int,int);
+void DFS(MGraph,Vertex);
+void BFS(MGraph,Vertex,Queue *);
+void ResetVisit(MGraph,Bool *);
+int main()
+{
+    int N,E;
+    scanf("%d %d",&N,&E);
+    MGraph G=CreateGraph(N,E);
+    int i;
+    for(i=0;i<N;i++)
+    {
+        if(Visited[i]==false)
+        {
+            DFS(G,i);
+            printf("}");
+            printf("\n");
+            TAG=false;
+        }
+    }
+    ResetVisit(G,Visited);
+    Queue *PtrQ=CreateQueue(MaxVertexNum);
+    for(i=0;i<N;i++)
+    {
+        if(Visited[i]==false)
+        {
+            BFS(G,i,PtrQ);
+            printf("}");
+            printf("\n");
+            TAG=false;
+        }
+    }
+    return 0;
+}
+void ResetVisit(MGraph Graph,Bool *Visit)
+{
+    TAG=false;
+    Vertex V,W;
+    for(V=0;V<Graph->Nv;V++)
+    {
+        Visit[V]=false;
+    }
+}
+MGraph CreateGraph(int N,int E)
+{
+    MGraph Graph;
+    Graph=(MGraph)malloc(sizeof(struct GNode));
+    Graph->Nv=N;
+    Graph->Ne=E;
+    int i;
+    int n,e;
+    Vertex V,W;
+    for(V=0;V<N;V++)
+    {
+        for(W=0;W<N;W++)
+        {
+            Graph->G[V][W]=0;
+        }
+        Visited[V]=false;
+    }
+    for(i=0;i<E;i++)
+    {
+        scanf("%d %d",&n,&e);
+        Graph->G[n][e]=1;
+        Graph->G[e][n]=1;
+    }
+    return Graph;
+}
+void DFS(MGraph Graph,Vertex V)
+{
+    if(TAG==false)
+    {
+        TAG=true;
+        printf("{ ");
+    }
+    printf("%d ",V);
+    int i;
+    Visited[V]=true;
+    for(i=0;i<Graph->Nv;i++)
+    {
+        if(Graph->G[V][i]!=0&&Visited[i]==false)
+        {
+            DFS(Graph,i);
+        }
+    }
+}
+Queue *CreateQueue(int M)
+{
+    Queue *PtrQ=(Queue *)malloc(sizeof(Queue));
+    PtrQ->Data=(Vertex *)malloc(M*sizeof(Vertex));
+    PtrQ->front=PtrQ->rear=-1;
+
+    return PtrQ;
+}
+Bool IsFull(Queue *PtrQ)
+{
+    Bool full=false;
+    if((PtrQ->rear+1)%MaxVertexNum==PtrQ->front)
+    {
+        full=true;
+    }
+    return full;
+}
+Bool IsEmpty(Queue *PtrQ)
+{
+    Bool empty=false;
+    if(PtrQ->front==PtrQ->rear)
+    {
+        empty=true;
+    }
+    return empty;
+}
+void Enqueue(Queue *PtrQ,Vertex V) 
+{
+    if(!IsFull(PtrQ))
+    {
+        PtrQ->rear=(PtrQ->rear+1)%MaxVertexNum;
+        PtrQ->Data[PtrQ->rear]=V;
+    }
+}
+int Dequeue(Queue *PtrQ)
+{
+    if(!IsEmpty(PtrQ))
+    {
+        PtrQ->front=(PtrQ->front+1)%MaxVertexNum;
+        return PtrQ->Data[PtrQ->front];
+    }
+}
+void BFS(MGraph Graph,Vertex nv,Queue *PtrQ)
+{
+    Vertex V,W;
+    if(TAG==false)
+    {
+        TAG=true;
+        printf("{ ");
+    }
+    printf("%d ",nv);
+    Visited[nv]=true;
+    Enqueue(PtrQ,nv);
+    while(!IsEmpty(PtrQ))
+    {
+        V=Dequeue(PtrQ);
+        for(W=0;W<Graph->Nv;W++)
+        {
+            if(Visited[W]==false&&Graph->G[V][W]!=0)
+            {
+                printf("%d ",W);
+                Visited[W]=true;
+                Enqueue(PtrQ,W);
+            }
+        }
+    }
+}
+
+
+
+//以下是我写的还没有通过的。。
+#include <stdio.h>
+#include <stdlib.h> 
+#define MaxVertexNum 100
+typedef int WeightType;
+typedef int Vertex;//将整形定义成边的类型，因为在数组中的整形代表边 
+typedef struct GNode *PtrToNode;
+struct GNode {
+	int Nv;/*顶点数*/ 
+	int Ne;/*边数*/
+	WeightType G[MaxVertexNum][MaxVertexNum]; 
+	//DataType Data[MaxVertexNum]　存顶点的数据 
+}; 
+typedef PtrToNode MGraph;/*以邻接矩阵存储的图类型*/
+
+typedef struct ENode *PtroToENode;
+struct ENode {
+	Vertex V;
+	Vertex W;
+//	WeightType Weight;权重 
+};
+typedef PtroToENode Edge;
+
+int check[MaxVertexNum];//建立一个全局变量用于检查　节点是否被访问过 
+MGraph CreateGraph(int VertexNum) {
+	//给定节点的个数　来创建图(初始化)
+	MGraph Graph = (MGraph)malloc(sizeof(struct GNode)); 
+	Graph->Ne = 0;
+	Graph->Nv = VertexNum;
+	//这里的表中的数组的两个参数表示的是两条边，所以重新定义一个类型更专业 
+	for(Vertex V = 0;V<VertexNum;V++) {
+		for(Vertex W = 0;W<VertexNum;W++) {
+			Graph->G[V][W] = 0;
+		}
+	}
+	return Graph;
+}
+void InsertEdge(MGraph Graph,Edge E) {
+	Graph->G[E->V][E->W] = 1;
+	
+}
+MGraph BuildGraph() {
+	MGraph Graph;
+	int Nv;//边的个数 
+	scanf("%d",&Nv);
+	Graph = CreateGraph(Nv);
+	scanf("%d",&(Graph->Ne)); 
+	if(Graph->Ne!=0) {
+		Edge E = (Edge)malloc(sizeof(struct ENode));
+		for(int i = 0;i<Graph->Ne;i++) {
+			scanf("%d %d",&E->V,&E->W);
+			InsertEdge(Graph,E);
+		}
+	}
+	
+	/*如果顶点有数据的话，读入数据
+	for(V=0,V<Graph->Nv;V++)
+		scanf("%d",&(Graph->Data[V]));
+	*/ 
+	
+	
+	
+	
+	return Graph;
+}
+
+void DFS (MGraph Graph,Vertex V) {
+	Vertex i;
+	check[V] = 1;
+	for(i = 0;i<Graph->Nv;i++) {
+		if(Graph->G[V][i]!=0&&check[i]==0) {
+			DFS(Graph,i);
+		}
+	}
+	
+	 
+}
+int main() {
+	MGraph Graph = BuildGraph;
+	
+}
+

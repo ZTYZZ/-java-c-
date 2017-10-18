@@ -1,0 +1,177 @@
+/*
+04-树5 Root of AVL Tree（25 分）
+An AVL tree is a self-balancing binary search tree. In an AVL tree, the heights of the two child subtrees of any node differ by at most one; if at any time they differ by more than one, rebalancing is done to restore this property. Figures 1-4 illustrate the rotation rules.
+
+  
+ 
+
+Now given a sequence of insertions, you are supposed to tell the root of the resulting AVL tree.
+Input Specification:
+
+Each input file contains one test case. For each case, the first line contains a positive integer N (≤20) which is the total number of keys to be inserted. Then N distinct integer keys are given in the next line. All the numbers in a line are separated by a space.
+
+Output Specification:
+
+For each test case, print the root of the resulting AVL tree in one line.
+
+Sample Input 1:
+
+5
+88 70 61 96 120
+Sample Output 1:
+
+70
+Sample Input 2:
+
+7
+88 70 61 96 120 90 65
+Sample Output 2:
+
+88
+*/
+
+#include <stdio.h>
+#include <stdlib.h>
+
+typedef struct AVLTreeNode *AVLTree;
+struct AVLTreeNode {
+	int data;
+	AVLTree left;
+	AVLTree right;
+	int height;//代表的是子树的高度 
+}; 
+
+int getHeight(AVLTree A);
+int Max(int a ,int b);
+AVLTree singleLeftRotation(AVLTree A);
+AVLTree singleRightRotation(AVLTree A);
+AVLTree doubleLeftRightRotation(AVLTree A);
+AVLTree doubleRightLeftRotation(AVLTree A);
+AVLTree insert(int node ,AVLTree root);
+
+
+int getHeight(AVLTree A) {
+	int HL,HR,MaxH;
+	
+	if(A) {
+		HL = getHeight(A->left);
+		HR = getHeight(A->right);
+		MaxH = HL>HR?HL:HR;
+		return(MaxH + 1);
+	}
+	else 
+		return 0;//为空 
+}
+
+//int getHeight(AVLTree T) {
+//	if(!T)
+//		return -1;
+//	else 
+//		return T->height;
+//} 
+int Max(int a ,int b) {
+	return a>b?a:b;
+} 
+AVLTree singleLeftRotation(AVLTree A) {
+	AVLTree B;
+	B = A->left;
+	A->left = B->right;
+	B->right = A;
+	A->height = Max(getHeight(A->left),getHeight(A->right)) +1;
+	B->height = Max(getHeight(B->left),getHeight(A->right)) +1; 
+	return B;
+}
+AVLTree singleRightRotation(AVLTree A) {
+	AVLTree B;
+	B = A->right;
+	A->right = B->left;
+	B->left = A; 
+	A->height = Max(getHeight(A->left),getHeight(A->right)) +1;
+	B->height = Max(getHeight(B->left),getHeight(A->right)) +1; 
+	return B;
+}
+
+AVLTree doubleLeftRightRotation(AVLTree A) {
+	A->left = singleRightRotation(A->left);
+	return singleLeftRotation(A);
+}
+
+AVLTree doubleRightLeftRotation(AVLTree A) {
+	A->right = singleLeftRotation(A->right);
+	return singleRightRotation(A);
+}
+
+
+AVLTree insert(int node ,AVLTree root) {
+	//插入的过程
+	if(root == NULL) {
+		root = (AVLTree)malloc(sizeof(struct AVLTreeNode));
+		root->data = node;
+		root->left = NULL;
+		root->right = NULL;
+		root->height = 0;
+	} 
+	else if(node<root->data) {//插到左边去
+		 root->left = insert(node,root->left);
+//		 printf("我左子树的高度为%d,右子树高度为%d\n",getHeight(root->left),getHeight(root->right));
+		 if(getHeight(root->left)-getHeight(root->right) == 2) {
+		 	
+		 	if(node>root->left->data) {//这里就想不到啊  
+		 		root = doubleLeftRightRotation(root);
+//		 		printf("我的左右不平衡了,左右旋转一下\n");
+//		 		printf("旋转后的左左子树的高度为%d,右子树高度为%d\n",getHeight(root->left),getHeight(root->right)); 
+			 }
+			 else {
+			 	root = singleLeftRotation(root);
+//			 	printf("我的左右不平衡了,右旋转一下\n");
+//		 		printf("旋转后的左左子树的高度为%d,右子树高度为%d\n",getHeight(root->left),getHeight(root->right)); 
+			 }
+		 } 
+	}
+	else if(node >root->data) {
+		root->right = insert(node ,root->right);
+		if(getHeight(root->left)-getHeight(root->right)==-2) {
+			if(node<root->right->data) {
+				root = doubleRightLeftRotation(root);		 		
+//				printf("我的左右不平衡了,右左旋转一下\n");
+//		 		printf("旋转后的左左子树的高度为%d,右子树高度为%d\n",getHeight(root->left),getHeight(root->right)); 
+				
+			}
+			else {
+				root = singleRightRotation(root);
+//				printf("我的左右不平衡了,右旋转一下\n");
+//		 		printf("旋转后的左左子树的高度为%d,右子树高度为%d\n",getHeight(root->left),getHeight(root->right)); 
+			}
+		}
+	}
+	root->height = Max(getHeight(root->left),getHeight(root->right))+1; //更新树高。 ？？？ 
+	return root; 
+} 
+
+AVLTree buildTree(int N) {
+	int node,i;
+	AVLTree root = NULL;/*注意这里！！！！！！！！！！由于之前没有初始化，导致不断出错*/ 
+	if(N==0) {
+		return NULL;
+	} 
+	else {
+		for(i = 0;i<N;i++) {
+			scanf("%d",&node);
+//			printf("我读到了%d\n",node);
+			root = insert(node,root);
+//			return root;返回的错误了，，，一旦返回return就代表结束程序 
+		}
+		return root; 
+	}
+}
+
+
+int main() {
+	AVLTree T;
+	int N;
+	scanf("%d",&N); 
+	T = buildTree(N);//建立一个N个节点的平衡二叉树，并返回根节点 
+	if(N)
+		printf("%d",T->data);
+	return 0;
+}

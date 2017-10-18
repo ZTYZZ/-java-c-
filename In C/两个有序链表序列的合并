@@ -1,0 +1,139 @@
+/*
+
+attention：
+用t->Next做指针，会有数据丢失的问题，比如
+    P->Next = t1->Next;
+    t1 = t1->Next;
+    P = P->Next;
+这时t1和p指向同一个节点；
+如果之后再
+    P->Next = t2->Next;
+    t2 = t2->Next;
+    P = P->Next;
+那么t1所指向的那串数据就丢失了，找不回来了，
+因为通过P->Next = t2->Next;使得t1->Next = t2->Next;
+而之前的t1->Next没有保存，所以结果当然错误，这个错误比较隐秘，需要自己手动运行代码才能发现。
+
+
+
+02-线性结构1 两个有序链表序列的合并（15 分）
+本题要求实现一个函数，将两个链表表示的递增整数序列合并为一个非递减的整数序列。
+
+函数接口定义：
+
+List Merge( List L1, List L2 );
+其中List结构定义如下：
+
+typedef struct Node *PtrToNode;
+struct Node {
+    ElementType Data; /* 存储结点数据 */
+    PtrToNode   Next; /* 指向下一个结点的指针 */
+};
+typedef PtrToNode List; /* 定义单链表类型 */
+L1和L2是给定的带头结点的单链表，其结点存储的数据是递增有序的；函数Merge要将L1和L2合并为一个非递减的整数序列。应直接使用原序列中的结点，返回归并后的链表头指针。
+
+裁判测试程序样例：
+
+#include <stdio.h>
+#include <stdlib.h>
+
+typedef int ElementType;
+typedef struct Node *PtrToNode;
+struct Node {
+    ElementType Data;
+    PtrToNode   Next;
+};
+typedef PtrToNode List;
+
+List Read(); /* 细节在此不表 */
+void Print( List L ); /* 细节在此不表；空链表将输出NULL */
+
+List Merge( List L1, List L2 );
+
+int main()
+{
+    List L1, L2, L;
+    L1 = Read();
+    L2 = Read();
+    L = Merge(L1, L2);
+    Print(L);
+    Print(L1);
+    Print(L2);
+    return 0;
+}
+
+/* 你的代码将被嵌在这里 */
+输入样例：
+
+3
+1 3 5
+5
+2 4 6 8 10
+输出样例：
+
+1 2 3 4 5 6 8 10 
+NULL
+NULL
+*/
+
+/*
+1. 定义一个新的节点，用L指向头结点
+2.判断两个链表是否为NULL。都为NULL，直接输出L 
+  否则，继续判断 第一个链表 > 第二个链表  ?
+  	大于：将L的下一个节点指向第二个链表。
+	小于：将L的下一个节点指向第一个链。
+	重复 判断，直到有一个为空。 
+	如果L2链表为空，就将L的下一个节点指向L1；
+	如果L1...                            L2； 
+    返回 L； 
+    */
+List Merge( List L1, List L2 ) {
+	List L,temp,temp1,temp2;
+	L = (List)malloc(sizeof(List));
+	temp = L; 
+	temp1 = L1;
+	temp2 = L2;
+	L1 = L1->Next;//去掉头结点
+	L2 = L2->Next;//去掉头节点 
+	
+	if(!L1 && !L2) {
+		return L; 
+	} 
+	
+	while(L2 && L1 ) {//这错了！！不是判断下一个节点 是不是空，而是判断当前结点是不是空 
+		if(L1->Data > L2->Data) {
+			
+			L->Next = L2;
+			L = L ->Next;
+			L2 = L2->Next;
+			
+		}
+		else {
+			
+			L ->Next = L1;
+			L = L ->Next;
+			L1 = L1->Next;
+		} 
+	}
+	
+	if(L2) {
+
+		
+		L -> Next = L2;
+	}
+	if(L1) {
+
+		
+	
+     	L->Next = L1;
+	}
+
+	temp1 ->Next = NULL;
+	temp2 ->Next = NULL;
+    L1 = temp1;
+      L2 = temp2;
+	return temp;
+	
+
+	
+}

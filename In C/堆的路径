@@ -1,0 +1,105 @@
+/*
+05-树7 堆中的路径（25 分）
+将一系列给定数字插入一个初始为空的小顶堆H[]。随后对任意给定的下标i，打印从H[i]到根结点的路径。
+
+输入格式:
+
+每组测试第1行包含2个正整数N和M(≤1000)，分别是插入元素的个数、以及需要打印的路径条数。下一行给出区间[-10000, 10000]内的N个要被插入一个初始为空的小顶堆的整数。最后一行给出M个下标。
+
+输出格式:
+
+对输入中给出的每个下标i，在一行中输出从H[i]到根结点的路径上的数据。数字间以1个空格分隔，行末不得有多余空格。
+
+输入样例:
+
+5 3
+46 23 26 24 10
+5 4 3
+输出样例:
+
+24 23 10
+46 23 10
+26 10
+*/
+
+#include <stdio.h> 
+#include <stdlib.h>
+#define MinData -10000000
+#define MAXSIZE 1001
+
+typedef struct HeadStruct *MinHead;
+struct HeadStruct {
+	int Element[MAXSIZE];
+	int size;//堆当前的元素个数
+	int capacity;//堆的最大容量 
+	
+};
+MinHead buildMinHead(int MaxSize);
+MinHead insert(MinHead m,int data );
+void PrintRoad (MinHead m,int N);
+int find(MinHead m,int data);
+
+
+int main() {
+	int N1,N2;
+	scanf("%d %d",&N1,&N2);//读入节点的个数，以及要打印路径的个数 
+	MinHead H = buildMinHead(N1);
+	//printf("建好树了"); 
+	PrintRoad(H,N2);//打印路径，指定堆 制定节点个数 
+}
+
+MinHead buildMinHead(int MaxSize) {//建立N个节点的最小堆 
+	//首先，按顺序输入节点建堆
+	int data;
+	MinHead	m = (MinHead)malloc(sizeof(struct HeadStruct));
+	
+	m->size= 0;
+	m->capacity = MaxSize;
+	m->Element[0] = MinData;
+
+	while(MaxSize--) {
+		scanf("%d",&data);
+		m = insert(m,data);//向堆中插入元素 
+	} 
+	return m;
+}
+
+MinHead insert(MinHead m,int data ){
+	int i ;//i代表的是要插入的地方 
+	if(m->capacity==m->size) {
+		return m;
+	}
+	else {
+		i = ++m->size;
+		for(;m->Element[i/2] >data;i/=2) {
+			m->Element[i] = m->Element[i/2]; 
+		} 
+		//循环退出，即找到了位置
+		m->Element[i] = data; 
+	}
+	return m;
+} 
+void PrintRoad (MinHead m,int N) {
+	int index;
+	while(N--) {
+		scanf("%d",&index);
+//		index = find(m,data);
+		for(;index>1;index/=2) {
+			printf("%d ",m->Element[index]);
+		
+		}
+		printf("%d",m->Element[index]);
+		printf("\n");
+	}
+}
+
+//int find(MinHead m,int data) {
+//	//根据data来找元素，并返回索引值
+//	int i = 1;
+//	for(;i<=m->capacity;i++) {
+//		if(m->Element[i]==data) {
+//			printf("我找到了")
+//			return i;
+//		}
+//	}
+//}

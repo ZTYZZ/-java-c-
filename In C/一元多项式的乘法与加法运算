@@ -1,0 +1,183 @@
+#include <stdio.h>
+#include <stdlib.h> 
+typedef struct PolyNode *Polynomial;
+struct PolyNode {
+	int coef;
+	int expon;
+	Polynomial link;
+};
+Polynomial ReadPoly();
+void Attach(int c, int e,Polynomial *pRear);
+Polynomial Add(Polynomial P1,Polynomial P2);
+void PrintPoly(Polynomial P);
+Polynomial Mult(Polynomial P1,Polynomial P2);
+Polynomial ReadPoly() {
+	Polynomial P,Rear,tmp;
+	int c , e ,N;
+	
+	
+	scanf("%d",&N);
+	P = (Polynomial)malloc(sizeof(struct PolyNode));//其实是一个类型转换。 
+	P -> link = NULL;
+	Rear = P;
+	while(N--) {
+		scanf("%d %d",&c,&e);//一对一对读。。 
+		Attach(c,e,&Rear);//Rear是当前结果多项式的最后一项。Rear值要改变，所以要传进去指针。Rear的初值一种是设为null 一种是指向一个空节点。
+		
+	}
+	tmp = P;
+	P = P -> link;
+	free(tmp);
+	return P;
+	
+}
+
+void Attach(int c , int e ,Polynomial *pRear) {
+	Polynomial P;
+	P = (Polynomial)malloc(sizeof(struct PolyNode));//这是一个类型的转换。
+    P-> coef = c;
+	P -> expon = e;
+	P -> link = NULL;
+    (*pRear )-> link= P;
+    *pRear = P;
+}
+
+Polynomial Add(Polynomial P1 ,Polynomial P2) {
+							   
+	Polynomial P ,Rear,t1 , t2;
+	t1 = P1;
+	t2 = P2;
+	P = (Polynomial)malloc(sizeof(struct PolyNode));
+	P -> link = NULL;
+	Rear = P;
+	while(t1 && t2) {
+		if(t1->expon == t2 -> expon) {
+			Rear -> link = t1; 
+			Rear = Rear->link;
+			Rear -> coef = t1->coef + t2->coef;
+			t1 = t1->link;
+			t2 = t2 -> link;
+			 
+	}
+		else if(t1 ->expon > t2 -> expon) {
+			Rear ->link = t1;
+			Rear = Rear -> link;
+			t1 = t1->link;
+			
+			
+			
+		}
+		else {
+			Rear -> link = t2;
+			Rear = Rear -> link;
+			t2 = t2->link;
+		}
+		
+	
+	}
+	while(t1) {
+		Rear -> link = t1;
+		
+	}
+	while(t2) {
+		Rear -> link = t2 ;
+	}
+	return P->link;
+}
+
+void PrintPoly(Polynomial P) {
+	while(P) {
+		if(P)
+			printf("%d %d ",P->coef,P->expon);
+		else 
+			printf("%d %d",P->coef,P->expon);
+		P = P ->link;
+	}
+}
+
+//Polynomial Mult(Polynomial P1,Polynomial P2) {
+//	Polynomial P,Rear,t1,t2,t3,t4;
+//	t1 = P1;
+//	t2 = P2;
+//	P = (Polynomial)malloc(sizeof(struct PolyNode));
+//	P ->link =NULL;
+//	Rear = P;
+//	
+//	while(t1) {
+//	
+//		while(t2) {
+//			
+//			Attach(t1->coef*t2->coef, t1->expon +t2->expon,&Rear);
+//			t2 = t2->link; 
+//			}
+//
+//	
+//
+//	printf("P:");
+//	PrintPoly(P->link);
+//	printf("\n");
+//	if(t3->link) {
+//	
+//		printf("t4:");
+//		t3 = t3->link;
+//		P = P->link; 
+//		t4 = Add(t3,P);
+//		PrintPoly(t4->link);
+//	}
+//
+//	t3->link = P->link;
+//
+//	t1 = t1->link;	
+//	t2 = P2;
+//	P->link = NULL;
+//	Rear = P;
+//
+//	
+//    }
+//	
+//	return t4->link;
+//}
+Polynomial Mult(Polynomial p1, Polynomial p2)
+{
+    Polynomial t1,t2,rear,t3,temp,c,ptr;
+    t1 = p1; t2 = p2;
+    t3=(Polynomial)malloc(sizeof(PolyNode));  
+    t3->link=NULL;   
+    if(t1 == NULL||t2 == NULL)
+    {
+        return t3;
+    }
+    while(t1!=NULL)
+    {
+        c=(Polynomial)malloc(sizeof(PolyNode));  
+        rear = c;
+        while(t2!=NULL)
+        {
+            ptr=(Polynomial)malloc(sizeof(PolyNode));  
+            ptr->expon=t1->expon + t2->expon;  
+            ptr->coef=t1->coef*t2->coef;  
+            t2 = t2->link;  
+            rear->link=ptr;  
+            rear=ptr;  
+        }
+        rear->link=NULL;
+        c = c->link;
+        t3 = Add(c,t3);
+        t1 = t1->link;
+    }
+     
+    return t3;
+}
+
+int main() {
+	Polynomial P1,P2,PP,PS;
+	P1 = ReadPoly();
+	P2 = ReadPoly();
+//	PP = Mult(P1,P2);
+//	PrintPoly(PP);
+	printf("\n");
+	PS = Add(P1,P2);
+	PrintPoly(PS);
+	return 0;
+	
+}

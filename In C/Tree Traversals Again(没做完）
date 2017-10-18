@@ -1,0 +1,90 @@
+/*
+
+03-树3 Tree Traversals Again（25 分）
+An inorder binary tree traversal can be implemented in a non-recursive way with a stack. For example, suppose that when a 6-node binary tree (with the keys numbered from 1 to 6) is traversed, the stack operations are: push(1); push(2); push(3); pop(); pop(); push(4); pop(); pop(); push(5); push(6); pop(); pop(). Then a unique binary tree (shown in Figure 1) can be generated from this sequence of operations. Your task is to give the postorder traversal sequence of this tree.
+
+
+Figure 1
+Input Specification:
+
+Each input file contains one test case. For each case, the first line contains a positive integer N (≤30) which is the total number of nodes in a tree (and hence the nodes are numbered from 1 to N). Then 2N lines follow, each describes a stack operation in the format: "Push X" where X is the index of the node being pushed onto the stack; or "Pop" meaning to pop one node from the stack.
+
+Output Specification:
+
+For each test case, print the postorder traversal sequence of the corresponding tree in one line. A solution is guaranteed to exist. All the numbers must be separated by exactly one space, and there must be no extra space at the end of the line.
+
+Sample Input:
+
+6
+Push 1
+Push 2
+Push 3
+Pop
+Pop
+Push 4
+Pop
+Pop
+Push 5
+Push 6
+Pop
+Pop
+Sample Output:
+
+3 4 2 6 5 1
+
+*/
+
+#include <stdio.h>
+#include <stdlib.h>
+typedef struct TreeNode *BinTree;
+struct TreeNode {
+	ElementType data;
+	BinTree left;
+	BinTree right;
+	
+	/*
+	明白了一些东西。
+	如果我不重新定义类型的话。
+	TreeNode 里面的左子树 和右子树 必须用指针写
+	比如：struct TreeNode *left;指向TreeNode 的指针。
+	这样就可以直接写咯！！
+	*/
+	
+	 
+}; 
+
+BinTree buildTree() {
+	int N,d,flag = 1;
+	char s[4];//声明一个大小为4的字符串。 
+	BinTree T,temp1,temp2,head;
+	T = (BinTree)malloc(sizeof(struct TreeNode));
+	head = T;
+	temp1 = T;
+	temp2 = T;
+	scanf("%d",&N);
+	while(N) {
+		scanf("\n%s %d",&s,&d);
+		if(s=="Push") {
+			T = (BinTree)malloc(sizeof(struct TreeNode));
+			T->data = d;
+			if(flag==1) {
+				temp1->left = T;
+			}
+			else {
+				temp1->right = T;
+			}
+			temp1 = T;
+			temp2 = temp1;
+			flag = 1;
+		}
+		else {
+			temp1 = 
+		}
+		N--;
+	}
+}
+int main() {
+	T1 = buildTree();
+	postorder(T1);
+	return 0;
+}
