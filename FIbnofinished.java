@@ -28,14 +28,24 @@ public class FIbnofinished {
 	 * 第二种方法：迭代
 	 * A:记忆：memoization
 	 * B:动态规划 颠倒计算方向
+	 * 
+	 * in B case:we can imagine as a walk upstairs,
+	 * use f is a floor.
+	 * use g is a upper floor.
+	 * we go upstairs is one by one.
+	 * g = g+f;
+	 * f = g-f;
+	 * 
+	 * 
 	 */
 	
 	public static int fib2(int n) {
 		int f =0;
 		int g =1;//init
-		while(0<n--) {
+		while(n>0) {
 			g = g+f;
 			f = g-f;
+			n--;
 			  
 		}
 		
@@ -47,6 +57,8 @@ public class FIbnofinished {
 	 * to compute twp recursion fib(n-1) and fib(n-2)
 	 * 
 	 *  we just copute fib(n-1)and fib(n) is ok
+	 *  
+	 *  no finished.
 	 */
 	
 	public static int fib3(int n) {
@@ -54,9 +66,10 @@ public class FIbnofinished {
 			return 0;
 		}
 		else {
-			return fib3(n-1) + fib3(n);
+			return 1;//fib3(n-1) + fib3(n);
 		}
 	}
+	
 	
 	
 }
